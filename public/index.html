@@ -9,10 +9,10 @@
     <style>
         :root {
             --primary: #6366f1;
-            --accent: #8b5cf6;
+            --accent: #a855f7;
             --bg: #020617;
-            --glass: rgba(15, 23, 42, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(15, 23, 42, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
             --text: #f8fafc;
             --gold: #fbbf24;
             --success: #22c55e;
@@ -24,7 +24,7 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding-bottom: 100px; /* Space for nav bar */
+            padding-bottom: 100px;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -32,241 +32,227 @@
         .bg-mesh {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; 
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
         }
 
+        /* Header with Auth Toggle */
         .header {
             position: sticky; top: 0; z-index: 1000;
             padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(2, 6, 23, 0.8);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--border);
         }
 
-        .search-container { padding: 10px 20px; }
-        .search-box {
-            background: var(--glass); border: 1px solid var(--border);
-            border-radius: 14px; display: flex; align-items: center;
-            padding: 12px 15px; gap: 10px;
+        .auth-trigger {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
         }
-        .search-box input { background: transparent; border: none; color: white; outline: none; width: 100%; }
+
+        /* Modals */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            z-index: 2000; display: flex; align-items: center; justify-content: center;
+            padding: 20px; backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Inputs & Buttons */
+        input {
+            width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px;
+            border: 1px solid var(--border); background: rgba(0,0,0,0.3);
+            color: white; box-sizing: border-box; outline: none;
+        }
+
+        .btn-pro {
+            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; font-weight: 800; cursor: pointer; margin-top: 10px;
+        }
 
         /* Product Cards */
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
         .p-card {
             background: var(--glass); border: 1px solid var(--border);
-            border-radius: 24px; overflow: hidden; position: relative;
+            border-radius: 20px; overflow: hidden;
         }
-        .p-card img { width: 100%; height: 120px; object-fit: cover; }
-        
-        .wallet-card {
-            background: linear-gradient(135deg, #1e1b4b, #312e81);
-            margin: 20px; padding: 25px; border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .p-card img { width: 100%; height: 110px; object-fit: cover; }
 
+        /* Nav Bar */
         .nav-bar {
             position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
-            border-radius: 24px; display: flex; justify-content: space-around;
-            padding: 15px; border: 1px solid var(--border); z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
+            border-radius: 25px; display: flex; justify-content: space-around;
+            padding: 12px; border: 1px solid var(--border); z-index: 1000;
         }
-        .nav-item { color: #64748b; font-size: 22px; transition: 0.3s; cursor: pointer; }
-        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
-
-        .btn-buy {
-            width: 100%; padding: 10px; border-radius: 12px; border: none;
-            background: var(--primary); color: white; font-weight: 800; margin-top: 10px;
-        }
+        .nav-item { color: #64748b; font-size: 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; text-decoration: none; cursor: pointer; }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { color: var(--primary); }
 
         .hidden { display: none; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body>
     <div class="bg-mesh"></div>
 
-    <div id="main-ui">
-        <div class="header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div id="user-pfp" style="width:35px; height:35px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800;">?</div>
-                <div style="font-weight:800; font-size:16px;" id="user-name">Loading...</div>
-            </div>
-            <div class="icon-btn" onclick="nav('cart')" style="position:relative; background:var(--glass); padding:10px; border-radius:12px; border:1px solid var(--border);">
-                <i class="fas fa-shopping-bag"></i>
-                <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; font-size:10px; padding:2px 6px; border-radius:50%;">0</span>
-            </div>
+    <div id="modal-auth" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="atitle">Join Store</h2>
+            <input type="text" id="user" placeholder="Username">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn-pro" onclick="doAuth()" id="abtn">Login</button>
+            <p onclick="toggleAuthMode()" style="color:var(--primary); font-size:13px; margin-top:15px; cursor:pointer;">Switch to Register</p>
+            <button onclick="closeModal('modal-auth')" style="background:none; border:none; color:#64748b; margin-top:15px;">Close</button>
         </div>
+    </div>
 
-        <div id="page-store">
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search" style="color:#64748b"></i>
-                    <input type="text" placeholder="Search products..." oninput="searchProduct(this.value)">
-                </div>
-            </div>
-            <div id="product-list" class="product-grid"></div>
+    <div id="modal-sell" class="modal hidden">
+        <div class="modal-content">
+            <h2>Add Product</h2>
+            <input type="text" id="p-title" placeholder="Product Name">
+            <input type="number" id="p-price" placeholder="Price ($)">
+            <input type="text" id="p-img" placeholder="Image URL (Direct link)">
+            <button class="btn-pro" onclick="addProduct()">List Item</button>
+            <button onclick="closeModal('modal-sell')" style="background:none; border:none; color:#64748b; margin-top:15px;">Cancel</button>
         </div>
+    </div>
 
-        <div id="page-wallet" class="hidden">
-            <div class="wallet-card">
-                <span style="font-size:13px; opacity:0.7;">Your Balance</span>
-                <h1 id="wall-bal" style="margin:5px 0; font-size:40px;">$0.00</h1>
-                <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                    <span id="upi-id" style="font-size:12px; font-weight:600; color:var(--accent);">loading_upi...</span>
-                    <i class="fas fa-copy" onclick="copyUPI()" style="cursor:pointer"></i>
-                </div>
-            </div>
-            <div style="padding: 20px;">
-                <div style="background:var(--glass); padding:25px; border-radius:25px; border:1px solid var(--border);">
-                    <h3 style="margin-top:0">Deposit Funds</h3>
-                    <input type="number" id="dep-amt" placeholder="Amount ($)" style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; box-sizing:border-box;">
-                    <input type="text" id="dep-utr" placeholder="12-Digit UTR Number" style="width:100%; padding:14px; margin-bottom:15px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; box-sizing:border-box;">
-                    <button class="btn-buy" onclick="submitDeposit()" style="padding:15px; background:var(--success)">Deposit via UPI</button>
-                </div>
-            </div>
+    <div class="header">
+        <div style="font-weight:900; color:var(--gold)">SID ELITE</div>
+        <div class="auth-trigger" onclick="openAuth()">
+            <i class="fas fa-user-circle"></i>
+            <span id="header-user">Login</span>
         </div>
+    </div>
 
-        <div id="page-cart" class="hidden" style="padding:20px;">
-            <h2 style="margin-bottom:20px;">Your Cart</h2>
-            <div id="cart-items"></div>
-            <div id="cart-summary" class="hidden" style="margin-top:30px; background:var(--glass); padding:20px; border-radius:24px; border:1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                    <span style="opacity:0.7;">Total Payable:</span>
-                    <span id="cart-total" style="font-weight:800; color:var(--gold);">$0.00</span>
-                </div>
-                <button class="btn-buy" onclick="processCheckout()" style="padding:15px;">Confirm & Pay</button>
+    <div id="page-store" class="product-grid"></div>
+
+    <div id="page-wallet" class="hidden" style="padding: 20px;">
+        <div style="background:linear-gradient(135deg, #1e1b4b, #312e81); padding:25px; border-radius:25px; margin-bottom:20px;">
+            <span style="opacity:0.7">Wallet Balance</span>
+            <h1 id="wall-bal" style="font-size:40px; margin:5px 0">$0.00</h1>
+            <div id="upi-display" style="font-size:12px; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px; display:flex; justify-content:space-between; margin-top:10px;">
+                <span>7722026588@ptaxis</span> <i class="fas fa-copy"></i>
             </div>
         </div>
+        <h3>Add Money</h3>
+        <input type="number" id="dep-amt" placeholder="Amount ($)">
+        <input type="text" id="dep-utr" placeholder="12-Digit UTR Number">
+        <button class="btn-pro" style="background:var(--success)" onclick="submitDeposit()">Submit Deposit</button>
+    </div>
 
-        <div class="nav-bar">
-            <i class="fas fa-home nav-item active" id="n-store" onclick="nav('store')"></i>
-            <i class="fas fa-wallet nav-item" id="n-wallet" onclick="nav('wallet')"></i>
-            <i class="fas fa-shopping-bag nav-item" id="n-cart" onclick="nav('cart')"></i>
-            <i class="fas fa-headset nav-item" onclick="tg.showAlert('Support: @YourHandle')"></i>
-        </div>
+    <div class="nav-bar">
+        <div class="nav-item active" id="n-store" onclick="nav('store')"><i class="fas fa-shop"></i>Store</div>
+        <div class="nav-item" id="n-sell" onclick="nav('sell')"><i class="fas fa-plus-circle"></i>Sell</div>
+        <div class="nav-item" id="n-wallet" onclick="nav('wallet')"><i class="fas fa-wallet"></i>Wallet</div>
+        <div class="nav-item" onclick="tg.showAlert('Coming Soon')"><i class="fas fa-cart-shopping"></i>Cart</div>
     </div>
 
 <script>
     let tg = window.Telegram.WebApp;
-    tg.expand();
-    
+    let isReg = false;
     let curUser = null;
-    let allProducts = [];
-    let cart = [];
-    let upi = "7722026588@ptaxis"; // Fallback UPI
+    let market = [
+        {id:1, title: "Premium Account", price: 10, image: "https://picsum.photos/200/110?random=1"},
+        {id:2, title: "Custom Bot Key", price: 25, image: "https://picsum.photos/200/110?random=2"}
+    ];
 
-    // AUTO-LOGIN ON LOAD
-    window.onload = async () => {
-        const user = tg.initDataUnsafe?.user;
-        document.getElementById('user-name').innerText = user?.first_name || "Guest User";
-        document.getElementById('user-pfp').innerText = (user?.first_name || "G")[0];
-
-        // Fetch data from server using TG ID
-        try {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ username: user?.username || "guest_"+user?.id, tgId: user?.id, auto: true })
-            });
-            const data = await res.json();
-            if(res.ok) {
-                curUser = data.user;
-                allProducts = data.market;
-                upi = data.upi;
-                renderStore(allProducts);
-                updateUI();
-            }
-        } catch(e) { tg.showAlert("Connection Error"); }
-    };
-
-    function updateUI() {
-        document.getElementById('wall-bal').innerText = "$" + curUser.balance.toFixed(2);
-        document.getElementById('upi-id').innerText = upi;
+    function toggleAuthMode() {
+        isReg = !isReg;
+        document.getElementById('atitle').innerText = isReg ? "Create Account" : "Join Store";
+        document.getElementById('abtn').innerText = isReg ? "Register" : "Login";
     }
 
-    function renderStore(products) {
-        document.getElementById('product-list').innerHTML = products.map(p => `
+    function openAuth() {
+        if(curUser) return tg.showAlert("You are logged in as " + curUser.username);
+        document.getElementById('modal-auth').classList.remove('hidden');
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    async function doAuth() {
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+        if(!u || !p) return tg.showAlert("Fill all fields");
+        
+        // Simulating Auth for Demo (Replace with your actual fetch)
+        curUser = { username: u, balance: 0 };
+        document.getElementById('header-user').innerText = u;
+        document.getElementById('wall-bal').innerText = "$0.00";
+        closeModal('modal-auth');
+        tg.showAlert("Welcome, " + u);
+    }
+
+    function nav(t) {
+        if(t === 'sell') {
+            if(!curUser) return tg.showAlert("Please Login to Sell items!");
+            document.getElementById('modal-sell').classList.remove('hidden');
+            return;
+        }
+        
+        ['page-store', 'page-wallet'].forEach(p => document.getElementById(p).classList.add('hidden'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        
+        document.getElementById('page-' + t).classList.remove('hidden');
+        document.getElementById('n-' + t).classList.add('active');
+        tg.HapticFeedback.selectionChanged();
+    }
+
+    function renderStore() {
+        document.getElementById('page-store').innerHTML = market.map(p => `
             <div class="p-card">
                 <img src="${p.image}">
-                <div style="padding:12px;">
+                <div style="padding:10px;">
                     <div style="font-size:12px; font-weight:600; height:32px; overflow:hidden;">${p.title}</div>
-                    <div style="color:var(--gold); font-weight:800; margin:5px 0;">$${p.price.toFixed(2)}</div>
-                    <button class="btn-buy" onclick="addToCart(${p.id}, '${p.title}', ${p.price})">Add to Cart</button>
+                    <div style="color:var(--gold); font-weight:800; margin:5px 0;">$${p.price}</div>
+                    <button class="btn-pro" style="padding:8px; font-size:11px; margin-top:0;">Buy</button>
                 </div>
             </div>
         `).join('');
     }
 
-    function addToCart(id, title, price) {
-        cart.push({id, title, price});
-        document.getElementById('cart-count').innerText = cart.length;
-        tg.HapticFeedback.impactOccurred('light');
-    }
+    function addProduct() {
+        const title = document.getElementById('p-title').value;
+        const price = document.getElementById('p-price').value;
+        const img = document.getElementById('p-img').value || "https://picsum.photos/200/110";
 
-    function nav(t) {
-        ['page-store', 'page-wallet', 'page-cart'].forEach(p => document.getElementById(p).classList.add('hidden'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById('page-' + t).classList.remove('hidden');
-        document.getElementById('n-' + t).classList.add('active');
-        if(t === 'cart') renderCart();
-        tg.HapticFeedback.selectionChanged();
-    }
+        if(!title || !price) return tg.showAlert("Please add Title and Price");
 
-    function renderCart() {
-        const container = document.getElementById('cart-items');
-        if(cart.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:50px; opacity:0.5;"><i class="fas fa-shopping-basket fa-3x"></i><p>Empty Cart</p></div>`;
-            document.getElementById('cart-summary').classList.add('hidden');
-            return;
-        }
-        document.getElementById('cart-summary').classList.remove('hidden');
-        let total = 0;
-        container.innerHTML = cart.map((item, i) => {
-            total += item.price;
-            return `<div style="display:flex; justify-content:space-between; background:var(--glass); padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid var(--border);">
-                <span>${item.title}</span><b>$${item.price.toFixed(2)}</b>
-            </div>`;
-        }).join('');
-        document.getElementById('cart-total').innerText = "$" + total.toFixed(2);
-    }
-
-    async function processCheckout() {
-        let total = cart.reduce((s, i) => s + i.price, 0);
-        if(curUser.balance < total) return tg.showAlert("Insufficient Balance");
-        
-        tg.showConfirm(`Pay $${total.toFixed(2)}?`, (ok) => {
-            if(ok) {
-                curUser.balance -= total;
-                cart = [];
-                document.getElementById('cart-count').innerText = "0";
-                updateUI();
-                nav('store');
-                tg.showAlert("Order Placed Successfully!");
-            }
-        });
-    }
-
-    function copyUPI() {
-        navigator.clipboard.writeText(upi);
-        tg.showAlert("UPI Copied!");
-    }
-
-    function searchProduct(q) {
-        const f = allProducts.filter(p => p.title.toLowerCase().includes(q.toLowerCase()));
-        renderStore(f);
+        market.unshift({ id: Date.now(), title, price: parseFloat(price), image: img });
+        renderStore();
+        closeModal('modal-sell');
+        tg.showAlert("Product Listed!");
+        nav('store');
     }
 
     function submitDeposit() {
-        const amt = document.getElementById('dep-amt').value;
-        const utr = document.getElementById('dep-utr').value;
-        if(!amt || utr.length < 10) return tg.showAlert("Fill all fields correctly");
-        tg.showAlert("Deposit request submitted for verification!");
-        nav('store');
+        if(!curUser) return tg.showAlert("Login to deposit!");
+        tg.showAlert("Request Submitted! Admin will verify UTR.");
+    }
+
+    // Init
+    window.onload = () => {
+        tg.expand();
+        renderStore();
     }
 </script>
 </body>
