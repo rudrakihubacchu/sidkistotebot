@@ -24,11 +24,11 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
+            padding-bottom: 100px; /* Space for nav bar */
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Premium Mesh Gradient */
         .bg-mesh {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; 
@@ -37,119 +37,68 @@
                 radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
         }
 
-        /* Glassmorphism Header */
         .header {
             position: sticky; top: 0; z-index: 1000;
             padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(2, 6, 23, 0.8);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
         }
 
-        /* Search Bar */
-        .search-container {
-            padding: 10px 20px;
-        }
+        .search-container { padding: 10px 20px; }
         .search-box {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            display: flex; align-items: center;
-            padding: 10px 15px;
-            gap: 10px;
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 14px; display: flex; align-items: center;
+            padding: 12px 15px; gap: 10px;
         }
-        .search-box input {
-            background: transparent; border: none; color: white; outline: none; width: 100%;
-        }
-
-        /* Featured Banner Carousel */
-        .carousel {
-            display: flex; overflow-x: auto; gap: 15px; padding: 10px 20px;
-            scroll-snap-type: x mandatory; scrollbar-width: none;
-        }
-        .carousel-item {
-            min-width: 85%; height: 140px; border-radius: 24px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            scroll-snap-align: center; position: relative; padding: 20px;
-            display: flex; flex-direction: column; justify-content: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        /* Wallet Section */
-        .wallet-card {
-            background: linear-gradient(135deg, #1e1b4b, #312e81);
-            margin: 20px; padding: 25px; border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative; overflow: hidden;
-        }
-        .wallet-card::after {
-            content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
-            background: white; opacity: 0.05; border-radius: 50%;
-        }
+        .search-box input { background: transparent; border: none; color: white; outline: none; width: 100%; }
 
         /* Product Cards */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
         .p-card {
             background: var(--glass); border: 1px solid var(--border);
-            border-radius: 24px; overflow: hidden; transition: transform 0.2s;
+            border-radius: 24px; overflow: hidden; position: relative;
         }
-        .p-card:active { transform: scale(0.95); }
         .p-card img { width: 100%; height: 120px; object-fit: cover; }
-        .p-tag {
-            background: var(--primary); font-size: 9px; padding: 3px 8px;
-            border-radius: 20px; position: absolute; top: 10px; left: 10px;
+        
+        .wallet-card {
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            margin: 20px; padding: 25px; border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Bottom Nav */
         .nav-bar {
             position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
             border-radius: 24px; display: flex; justify-content: space-around;
-            padding: 12px; border: 1px solid var(--border); z-index: 1000;
+            padding: 15px; border: 1px solid var(--border); z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .nav-item { color: #64748b; font-size: 20px; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-item { color: #64748b; font-size: 22px; transition: 0.3s; cursor: pointer; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
 
-        /* FAB Support */
-        .fab {
-            position: fixed; bottom: 100px; right: 20px;
-            width: 50px; height: 50px; background: #25d366;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 24px; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            z-index: 999;
+        .btn-buy {
+            width: 100%; padding: 10px; border-radius: 12px; border: none;
+            background: var(--primary); color: white; font-weight: 800; margin-top: 10px;
         }
 
         .hidden { display: none; }
-        input { font-family: inherit; }
-        
-        .empty-cart { text-align: center; padding: 50px 20px; color: #64748b; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body>
     <div class="bg-mesh"></div>
 
-    <div id="view-auth" class="auth-container" style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:var(--bg); z-index:2001;">
-        <div style="background:var(--glass); padding:40px 30px; border-radius:32px; width:85%; max-width:350px; text-align:center; border:1px solid var(--border); backdrop-filter:blur(20px);">
-            <div style="font-size: 40px; margin-bottom: 10px;">💎</div>
-            <h1 id="atitle" style="margin:0 0 10px 0;">Elite Store</h1>
-            <p id="asub" style="color:#64748b; font-size:14px; margin-bottom:20px;">Premium Digital Goods</p>
-            <input type="text" id="user" placeholder="Username" style="width:100%; padding:15px; margin-bottom:10px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white;">
-            <input type="password" id="pass" placeholder="Password" style="width:100%; padding:15px; margin-bottom:20px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white;">
-            <button class="btn-pro" onclick="doAuth()" id="abtn" style="width:100%; padding:15px; border-radius:12px; background:var(--primary); border:none; color:white; font-weight:800;">Login</button>
-            <p onclick="toggleAuth()" style="margin-top:20px; color:var(--accent); font-size:13px; cursor:pointer;">Don't have an account? Register</p>
-        </div>
-    </div>
-
-    <div id="main-ui" class="hidden">
+    <div id="main-ui">
         <div class="header">
-            <div style="font-weight:900; font-size:20px; background:linear-gradient(to right, var(--gold), #fcd34d); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">SID ELITE</div>
-            <div style="display:flex; gap:12px;">
-                <div class="icon-btn" onclick="nav('cart')" style="position:relative; background:var(--glass); padding:8px; border-radius:10px; border:1px solid var(--border);">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; font-size:10px; padding:2px 5px; border-radius:50%;">0</span>
-                </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div id="user-pfp" style="width:35px; height:35px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800;">?</div>
+                <div style="font-weight:800; font-size:16px;" id="user-name">Loading...</div>
+            </div>
+            <div class="icon-btn" onclick="nav('cart')" style="position:relative; background:var(--glass); padding:10px; border-radius:12px; border:1px solid var(--border);">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cart-count" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; font-size:10px; padding:2px 6px; border-radius:50%;">0</span>
             </div>
         </div>
 
@@ -157,154 +106,113 @@
             <div class="search-container">
                 <div class="search-box">
                     <i class="fas fa-search" style="color:#64748b"></i>
-                    <input type="text" placeholder="Search accounts, keys..." oninput="searchProduct(this.value)">
+                    <input type="text" placeholder="Search products..." oninput="searchProduct(this.value)">
                 </div>
             </div>
-
-            <div class="carousel">
-                <div class="carousel-item">
-                    <h3 style="margin:0">50% OFF</h3>
-                    <p style="font-size:12px; opacity:0.8;">Summer sale on all Premium Subscriptions!</p>
-                    <button style="width:fit-content; padding:5px 15px; border-radius:20px; border:none; background:white; font-size:10px; font-weight:800;">GRAB NOW</button>
-                </div>
-                <div class="carousel-item" style="background: linear-gradient(135deg, #059669, #10b981);">
-                    <h3 style="margin:0">Instant Delivery</h3>
-                    <p style="font-size:12px; opacity:0.8;">Get your codes delivered in seconds.</p>
-                </div>
-            </div>
-
             <div id="product-list" class="product-grid"></div>
         </div>
 
         <div id="page-wallet" class="hidden">
             <div class="wallet-card">
-                <div style="display:flex; justify-content:space-between; align-items:start;">
-                    <div>
-                        <span style="font-size:13px; opacity:0.7;">Main Balance</span>
-                        <h1 id="wall-bal" style="margin:5px 0; font-size:36px;">$0.00</h1>
-                    </div>
-                    <i class="fas fa-shield-check" style="font-size:24px; opacity:0.5;"></i>
-                </div>
-                <div class="upi-box">
-                    <span id="upi-id" style="font-size:13px; font-weight:600;">...</span>
-                    <button onclick="copyUPI()" style="background:white; color:black; border:none; padding:5px 12px; border-radius:8px; font-size:11px; font-weight:800;">COPY</button>
+                <span style="font-size:13px; opacity:0.7;">Your Balance</span>
+                <h1 id="wall-bal" style="margin:5px 0; font-size:40px;">$0.00</h1>
+                <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                    <span id="upi-id" style="font-size:12px; font-weight:600; color:var(--accent);">loading_upi...</span>
+                    <i class="fas fa-copy" onclick="copyUPI()" style="cursor:pointer"></i>
                 </div>
             </div>
-
-            <div style="padding:0 20px;">
-                <div style="background:var(--glass); padding:20px; border-radius:24px; border:1px solid var(--border);">
-                    <h4 style="margin-top:0"><i class="fas fa-arrow-down-to-line"></i> Add Funds</h4>
-                    <input type="number" id="dep-amt" placeholder="Enter Amount" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white;">
-                    <input type="text" id="dep-utr" placeholder="12 Digit UTR Number" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white;">
-                    <button class="btn-pro" onclick="submitDeposit()" style="background:var(--success)">Deposit via UPI</button>
+            <div style="padding: 20px;">
+                <div style="background:var(--glass); padding:25px; border-radius:25px; border:1px solid var(--border);">
+                    <h3 style="margin-top:0">Deposit Funds</h3>
+                    <input type="number" id="dep-amt" placeholder="Amount ($)" style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; box-sizing:border-box;">
+                    <input type="text" id="dep-utr" placeholder="12-Digit UTR Number" style="width:100%; padding:14px; margin-bottom:15px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; box-sizing:border-box;">
+                    <button class="btn-buy" onclick="submitDeposit()" style="padding:15px; background:var(--success)">Deposit via UPI</button>
                 </div>
             </div>
         </div>
 
         <div id="page-cart" class="hidden" style="padding:20px;">
-            <h2 style="margin-bottom:20px;">Shopping Cart</h2>
+            <h2 style="margin-bottom:20px;">Your Cart</h2>
             <div id="cart-items"></div>
             <div id="cart-summary" class="hidden" style="margin-top:30px; background:var(--glass); padding:20px; border-radius:24px; border:1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <span style="opacity:0.7;">Subtotal</span>
-                    <span id="cart-total">$0.00</span>
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                    <span style="opacity:0.7;">Total Payable:</span>
+                    <span id="cart-total" style="font-weight:800; color:var(--gold);">$0.00</span>
                 </div>
-                <button class="btn-pro" onclick="processCheckout()">Confirm Purchase</button>
+                <button class="btn-buy" onclick="processCheckout()" style="padding:15px;">Confirm & Pay</button>
             </div>
         </div>
-
-        <a href="https://wa.me/yournumber" class="fab"><i class="fab fa-whatsapp"></i></a>
 
         <div class="nav-bar">
             <i class="fas fa-home nav-item active" id="n-store" onclick="nav('store')"></i>
             <i class="fas fa-wallet nav-item" id="n-wallet" onclick="nav('wallet')"></i>
             <i class="fas fa-shopping-bag nav-item" id="n-cart" onclick="nav('cart')"></i>
-            <i class="fas fa-sign-out-alt nav-item" onclick="location.reload()"></i>
+            <i class="fas fa-headset nav-item" onclick="tg.showAlert('Support: @YourHandle')"></i>
         </div>
     </div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
-    let isReg = false;
+    
     let curUser = null;
-    let cart = [];
-    let upi = "";
     let allProducts = [];
+    let cart = [];
+    let upi = "7722026588@ptaxis"; // Fallback UPI
 
-    function toggleAuth() {
-        isReg = !isReg;
-        document.getElementById('atitle').innerText = isReg ? "Create Account" : "Welcome Back";
-        document.getElementById('abtn').innerText = isReg ? "Register" : "Login";
-    }
+    // AUTO-LOGIN ON LOAD
+    window.onload = async () => {
+        const user = tg.initDataUnsafe?.user;
+        document.getElementById('user-name').innerText = user?.first_name || "Guest User";
+        document.getElementById('user-pfp').innerText = (user?.first_name || "G")[0];
 
-    async function doAuth() {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        if(!u || !p) return tg.showAlert("Please fill fields");
-
-        const path = isReg ? '/api/register' : '/api/login';
+        // Fetch data from server using TG ID
         try {
-            const res = await fetch(path, {
+            const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username: u, password: p, tgId: tg.initDataUnsafe?.user?.id})
+                body: JSON.stringify({ username: user?.username || "guest_"+user?.id, tgId: user?.id, auto: true })
             });
             const data = await res.json();
             if(res.ok) {
-                if(isReg) { tg.showAlert("Registered! Please login."); toggleAuth(); }
-                else {
-                    curUser = data.user;
-                    upi = data.upi;
-                    allProducts = data.market;
-                    document.getElementById('view-auth').classList.add('hidden');
-                    document.getElementById('main-ui').classList.remove('hidden');
-                    updateUserDisplay();
-                    renderStore(allProducts);
-                }
-            } else tg.showAlert(data.error);
-        } catch(e) { tg.showAlert("Network Error"); }
-    }
+                curUser = data.user;
+                allProducts = data.market;
+                upi = data.upi;
+                renderStore(allProducts);
+                updateUI();
+            }
+        } catch(e) { tg.showAlert("Connection Error"); }
+    };
 
-    function updateUserDisplay() {
+    function updateUI() {
         document.getElementById('wall-bal').innerText = "$" + curUser.balance.toFixed(2);
         document.getElementById('upi-id').innerText = upi;
     }
 
     function renderStore(products) {
-        const container = document.getElementById('product-list');
-        container.innerHTML = products.map(p => `
-            <div class="p-card" style="position:relative;">
-                <div class="p-tag">BEST SELLER</div>
+        document.getElementById('product-list').innerHTML = products.map(p => `
+            <div class="p-card">
                 <img src="${p.image}">
                 <div style="padding:12px;">
-                    <div style="font-size:13px; font-weight:600; height:34px; overflow:hidden;">${p.title}</div>
-                    <div style="color:var(--gold); font-weight:800; margin:8px 0; font-size:16px;">$${p.price.toFixed(2)}</div>
-                    <button onclick="addToCart(${p.id}, '${p.title}', ${p.price})" style="width:100%; padding:10px; border-radius:10px; border:none; background:rgba(99,102,241,0.1); color:var(--primary); font-weight:800; font-size:12px;">+ ADD</button>
+                    <div style="font-size:12px; font-weight:600; height:32px; overflow:hidden;">${p.title}</div>
+                    <div style="color:var(--gold); font-weight:800; margin:5px 0;">$${p.price.toFixed(2)}</div>
+                    <button class="btn-buy" onclick="addToCart(${p.id}, '${p.title}', ${p.price})">Add to Cart</button>
                 </div>
             </div>
         `).join('');
     }
 
-    function searchProduct(q) {
-        const filtered = allProducts.filter(p => p.title.toLowerCase().includes(q.toLowerCase()));
-        renderStore(filtered);
-    }
-
     function addToCart(id, title, price) {
         cart.push({id, title, price});
-        tg.HapticFeedback.impactOccurred('medium');
         document.getElementById('cart-count').innerText = cart.length;
-        tg.showPopup({ message: `${title} added to cart!` });
+        tg.HapticFeedback.impactOccurred('light');
     }
 
     function nav(t) {
         ['page-store', 'page-wallet', 'page-cart'].forEach(p => document.getElementById(p).classList.add('hidden'));
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        
         document.getElementById('page-' + t).classList.remove('hidden');
         document.getElementById('n-' + t).classList.add('active');
-        
         if(t === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
     }
@@ -312,64 +220,52 @@
     function renderCart() {
         const container = document.getElementById('cart-items');
         if(cart.length === 0) {
-            container.innerHTML = `<div class="empty-cart"><i class="fas fa-shopping-basket fa-3x"></i><br><p>Your cart is empty</p></div>`;
+            container.innerHTML = `<div style="text-align:center; padding:50px; opacity:0.5;"><i class="fas fa-shopping-basket fa-3x"></i><p>Empty Cart</p></div>`;
             document.getElementById('cart-summary').classList.add('hidden');
             return;
         }
         document.getElementById('cart-summary').classList.remove('hidden');
         let total = 0;
-        container.innerHTML = cart.map((item, index) => {
+        container.innerHTML = cart.map((item, i) => {
             total += item.price;
-            return `
-                <div style="display:flex; align-items:center; background:var(--glass); padding:12px; border-radius:16px; margin-bottom:10px; border:1px solid var(--border);">
-                    <div style="flex:1;">
-                        <div style="font-size:14px; font-weight:600;">${item.title}</div>
-                        <div style="color:var(--gold); font-size:13px;">$${item.price.toFixed(2)}</div>
-                    </div>
-                    <i class="fas fa-trash-alt" onclick="removeItem(${index})" style="color:var(--danger); padding:10px;"></i>
-                </div>
-            `;
+            return `<div style="display:flex; justify-content:space-between; background:var(--glass); padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid var(--border);">
+                <span>${item.title}</span><b>$${item.price.toFixed(2)}</b>
+            </div>`;
         }).join('');
         document.getElementById('cart-total').innerText = "$" + total.toFixed(2);
     }
 
-    function removeItem(index) {
-        cart.splice(index, 1);
-        document.getElementById('cart-count').innerText = cart.length;
-        renderCart();
-    }
-
     async function processCheckout() {
-        let total = cart.reduce((sum, item) => sum + item.price, 0);
-        if(curUser.balance < total) return tg.showAlert("Insufficient Balance! Please deposit funds.");
+        let total = cart.reduce((s, i) => s + i.price, 0);
+        if(curUser.balance < total) return tg.showAlert("Insufficient Balance");
         
-        tg.showConfirm(`Confirm purchase for $${total.toFixed(2)}?`, (ok) => {
+        tg.showConfirm(`Pay $${total.toFixed(2)}?`, (ok) => {
             if(ok) {
-                tg.showAlert("Purchase Successful! Check your email/Telegram for the details.");
                 curUser.balance -= total;
                 cart = [];
                 document.getElementById('cart-count').innerText = "0";
-                updateUserDisplay();
+                updateUI();
                 nav('store');
+                tg.showAlert("Order Placed Successfully!");
             }
         });
     }
 
     function copyUPI() {
         navigator.clipboard.writeText(upi);
-        tg.showAlert("UPI Address Copied!");
+        tg.showAlert("UPI Copied!");
     }
 
-    async function submitDeposit() {
+    function searchProduct(q) {
+        const f = allProducts.filter(p => p.title.toLowerCase().includes(q.toLowerCase()));
+        renderStore(f);
+    }
+
+    function submitDeposit() {
         const amt = document.getElementById('dep-amt').value;
         const utr = document.getElementById('dep-utr').value;
-        if(!amt || utr.length < 10) return tg.showAlert("Valid Amount and UTR required");
-        
-        tg.showPopup({
-            title: "Deposit Submitted",
-            message: "Our team will verify your UTR and update your balance within 30 minutes.",
-            buttons: [{type: "ok"}]
-        });
+        if(!amt || utr.length < 10) return tg.showAlert("Fill all fields correctly");
+        tg.showAlert("Deposit request submitted for verification!");
         nav('store');
     }
 </script>
