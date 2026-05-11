@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,296 +7,207 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0088cc; /* Telegram Blue */
-            --accent: #00d4ff;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --amz-orange: #ff9900;
+            --primary: #3b82f6;
+            --accent: #60a5fa;
+            --bg: #030712;
+            --glass: rgba(17, 24, 39, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f9fafb;
+            --gold: #f59e0b;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding-bottom: 80px;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* Animated Header */
-        .header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        /* --- Animated Background --- */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
+                                    radial-gradient(circle at 100% 100%, #1e3a8a 0%, transparent 50%),
+                                    radial-gradient(circle at 50% 50%, #030712 0%, transparent 100%);
+            animation: pulse 10s infinite alternate;
         }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 
-        .header h1 {
-            font-size: 20px;
-            margin: 0;
-            background: linear-gradient(to right, var(--amz-orange), #ffcc00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
+        /* --- Auth Section --- */
+        .auth-container {
+            height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
         }
-
-        .balance-chip {
-            background: rgba(0, 136, 204, 0.1);
-            border: 1px solid var(--primary);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: transform 0.3s;
-        }
-
-        /* Dynamic Product Grid */
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 15px;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #334155;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .card:active { transform: scale(0.96); }
-
-        .card img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            border-bottom: 1px solid #334155;
-        }
-
-        .p-info { padding: 12px; }
-
-        .p-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            height: 40px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .p-price {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-
-        .btn-buy {
-            background: linear-gradient(90deg, var(--amz-orange), #ffb700);
-            border: none;
-            color: #000;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 700;
-            width: 100%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Bottom Navigation Bar */
-        .nav {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            right: 15px;
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .nav-btn {
-            border: none;
-            background: none;
-            color: #94a3b8;
-            font-size: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            transition: 0.3s;
-        }
-
-        .nav-btn.active { color: var(--accent); }
-        .nav-btn i { font-size: 20px; }
-
-        /* Wallet Form */
-        .wallet-card {
-            background: var(--card-bg);
-            margin: 15px;
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid #334155;
+        .glass-card {
+            background: var(--glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 28px;
+            padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
         }
 
         input {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 12px;
-            box-sizing: border-box;
-            outline: none;
+            width: 100%; padding: 14px; margin: 10px 0; border-radius: 14px;
+            border: 1px solid var(--border); background: rgba(0,0,0,0.3);
+            color: white; font-size: 16px; box-sizing: border-box;
         }
 
-        input:focus { border-color: var(--primary); }
+        .btn-pro {
+            width: 100%; padding: 16px; border-radius: 14px; border: none;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; font-weight: 700; font-size: 16px; cursor: pointer;
+            transition: 0.3s ease; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+
+        /* --- Main UI --- */
+        .header {
+            position: sticky; top: 0; z-index: 100; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(3, 7, 18, 0.6); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .product-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px;
+        }
+
+        .p-card {
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 24px; overflow: hidden; transition: 0.3s;
+        }
+        .p-card:active { transform: scale(0.96); }
+        .p-card img { width: 100%; height: 120px; object-fit: cover; }
+        .p-content { padding: 12px; }
+
+        .nav-bar {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 24px;
+            display: flex; justify-content: space-around; padding: 10px;
+        }
+        .nav-item { border: none; background: none; color: #9ca3af; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: var(--primary); }
 
         .hidden { display: none; }
     </style>
 </head>
 <body>
+    <div class="bg-mesh"></div>
 
-    <div class="header">
-        <h1>SID STORE</h1>
-        <div class="balance-chip">
-            <i class="fas fa-wallet"></i>
-            <span id="top-bal">$0.00</span>
+    <div id="view-auth" class="auth-container">
+        <div class="glass-card">
+            <h1 id="atitle" style="margin-top:0; font-size: 28px;">Sign In</h1>
+            <input type="text" id="user" placeholder="Username">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn-pro" onclick="doAuth()" id="abtn">Login</button>
+            <p onclick="toggleAuth()" style="text-align:center; color: var(--accent); cursor:pointer; margin-top:20px;">
+                Don't have an account? Register
+            </p>
         </div>
     </div>
 
-    <div id="page-home">
-        <div id="product-list" class="product-grid"></div>
-    </div>
+    <div id="main-ui" class="hidden">
+        <div class="header">
+            <span style="font-weight:900; letter-spacing:1px; color:var(--gold)">SID PRO</span>
+            <div id="top-bal" style="color:var(--primary); font-weight:bold;">$0.00</div>
+        </div>
 
-    <div id="page-wallet" class="hidden">
-        <div class="wallet-card">
-            <i class="fas fa-university" style="font-size: 40px; color: var(--accent); margin-bottom: 15px;"></i>
-            <h2 style="margin:0">Refill Balance</h2>
-            <p style="color: #94a3b8; font-size: 14px;">Pay via UPI & enter UTR</p>
-            <div style="background:#0f172a; padding:10px; border-radius:10px; margin:15px 0;">
-                <span id="upi-display" style="font-family: monospace; color: var(--amz-orange); font-size: 18px;"></span>
+        <div id="store-page" class="product-grid"></div>
+
+        <div id="profile-page" class="hidden" style="padding: 30px; text-align:center;">
+            <div style="background:var(--glass); padding:30px; border-radius:30px; border:1px solid var(--border);">
+                <div style="width:70px; height:70px; background:var(--primary); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:30px;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 id="prof-user" style="margin:0">User</h2>
+                <p id="prof-date" style="color:#6b7280; font-size:12px;">Joined: 2026</p>
+                <button class="btn-pro" style="margin-top:20px; background:#ef4444;" onclick="location.reload()">Logout</button>
             </div>
-            <input type="number" id="w-amt" placeholder="Amount (e.g. 500)">
-            <input type="text" id="w-utr" placeholder="12-Digit UTR Number">
-            <button class="btn-buy" style="margin-top:10px;" onclick="sendDep()">Confirm Deposit</button>
         </div>
-    </div>
 
-    <div class="nav">
-        <button class="nav-btn active" id="n-h" onclick="tab('home')">
-            <i class="fas fa-house"></i><span>Home</span>
-        </button>
-        <button class="nav-btn" id="n-w" onclick="tab('wallet')">
-            <i class="fas fa-credit-card"></i><span>Wallet</span>
-        </button>
-        <button class="nav-btn" onclick="tg.close()">
-            <i class="fas fa-circle-xmark"></i><span>Exit</span>
-        </button>
+        <div class="nav-bar">
+            <button class="nav-item active" id="ns" onclick="nav('store')"><i class="fas fa-grid-2 fa-lg"></i>Store</button>
+            <button class="nav-item" id="np" onclick="nav('profile')"><i class="fas fa-user fa-lg"></i>Profile</button>
+        </div>
     </div>
 
 <script>
     let tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.headerColor = "#0f172a";
-    
-    let uid = tg.initDataUnsafe?.user?.id || 12345;
-    
-    async function refresh() {
-        try {
-            let r = await fetch('/api/init', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify({id: uid, username: tg.initDataUnsafe?.user?.first_name}) 
-            });
-            let d = await r.json();
-            
-            // Dynamic UI updates
-            document.getElementById('top-bal').innerText = `$${d.user.balance.toFixed(2)}`;
-            document.getElementById('upi-display').innerText = d.upi;
-            
-            const list = document.getElementById('product-list'); 
-            list.innerHTML = "";
-            d.market.forEach(i => {
-                list.innerHTML += `
-                    <div class="card">
-                        <img src="${i.image}">
-                        <div class="p-info">
-                            <div class="p-title">${i.title}</div>
-                            <div class="p-price">$${i.price}</div>
-                            <button class="btn-buy" onclick="buy(${i.id})">
-                                <i class="fas fa-shopping-cart"></i> Buy Now
-                            </button>
-                        </div>
-                    </div>`;
-            });
-        } catch (e) { console.error("Update failed"); }
+    let isReg = false;
+    let curUser = null;
+    let isAdmin = false;
+
+    function toggleAuth() {
+        isReg = !isReg;
+        document.getElementById('atitle').innerText = isReg ? "Register" : "Sign In";
+        document.getElementById('abtn').innerText = isReg ? "Create Account" : "Login";
     }
 
-    async function buy(id) {
-        tg.HapticFeedback.impactOccurred('medium');
-        let r = await fetch('/api/buy', { 
-            method: 'POST', 
-            headers: {'Content-Type': 'application/json'}, 
-            body: JSON.stringify({buyerId: uid, itemId: id}) 
+    async function doAuth() {
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+        if(!u || !p) return tg.showAlert("Fill fields");
+
+        const path = isReg ? '/api/register' : '/api/login';
+        const res = await fetch(path, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: u, password: p, tgId: tg.initDataUnsafe?.user?.id})
         });
-        if(r.ok) {
-            tg.showPopup({title: 'Success!', message: 'Item added to your account.'});
-            refresh();
+        const data = await res.json();
+
+        if(res.ok) {
+            if(isReg) {
+                tg.showAlert("Registered! Now login.");
+                toggleAuth();
+            } else {
+                curUser = data.user;
+                isAdmin = data.isOwner;
+                document.getElementById('view-auth').classList.add('hidden');
+                document.getElementById('main-ui').classList.remove('hidden');
+                document.getElementById('prof-user').innerText = data.user.username;
+                document.getElementById('prof-date').innerText = "Member since: " + data.user.joined;
+                document.getElementById('top-bal').innerText = "$" + data.user.balance;
+                renderStore(data.market);
+            }
         } else {
-            tg.showPopup({title: 'Error', message: 'Insufficient balance. Please refill your wallet.'});
+            tg.showAlert(data.error);
         }
     }
 
-    function tab(t) {
+    function renderStore(market) {
+        const grid = document.getElementById('store-page');
+        grid.innerHTML = market.map(p => `
+            <div class="p-card">
+                <img src="${p.image}">
+                <div class="p-content">
+                    <div style="font-size:13px; font-weight:500; height:34px; overflow:hidden;">${p.title}</div>
+                    <div style="color:var(--gold); font-weight:800; margin:5px 0;">$${p.price}</div>
+                    <button class="btn-pro" style="padding:8px; font-size:12px;" onclick="tg.showAlert('Buying...')">Buy</button>
+                    ${isAdmin ? `<button onclick="setPrice(${p.id})" style="width:100%; margin-top:5px; background:#ef4444; border:none; border-radius:8px; color:white; padding:5px; font-size:10px;">EDIT PRICE</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function setPrice(id) {
+        const p = prompt("New Price:");
+        if(p) {
+            await fetch('/api/admin/update-price', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: curUser.username, itemId: id, newPrice: p})
+            });
+            location.reload();
+        }
+    }
+
+    function nav(t) {
+        document.getElementById('store-page').classList.toggle('hidden', t !== 'store');
+        document.getElementById('profile-page').classList.toggle('hidden', t !== 'profile');
+        document.getElementById('ns').classList.toggle('active', t === 'store');
+        document.getElementById('np').classList.toggle('active', t === 'profile');
         tg.HapticFeedback.selectionChanged();
-        document.getElementById('page-home').classList.toggle('hidden', t !== 'home');
-        document.getElementById('page-wallet').classList.toggle('hidden', t !== 'wallet');
-        document.getElementById('n-h').classList.toggle('active', t === 'home');
-        document.getElementById('n-w').classList.toggle('active', t === 'wallet');
     }
-
-    async function sendDep() {
-        const amount = document.getElementById('w-amt').value;
-        const utr = document.getElementById('w-utr').value;
-        if(!amount || !utr) return alert("Fill all fields");
-        
-        await fetch('/api/deposit', { 
-            method: 'POST', 
-            headers: {'Content-Type': 'application/json'}, 
-            body: JSON.stringify({userId: uid, amount, utr, username: tg.initDataUnsafe?.user?.first_name}) 
-        });
-        tg.showPopup({message: 'Payment sent for verification!'});
-    }
-
-    refresh();
 </script>
 </body>
 </html>
