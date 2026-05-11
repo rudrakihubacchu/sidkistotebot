@@ -1,74 +1,97 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const path = require('path');
+const fs = require('fs');
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// --- CONFIGURATION (FILL THESE OUT) ---
-const BOT_TOKEN = "8637135798:AAEdTzCnL3fn1keuLzLxQN0BUULXlTMicVY"; 
-const OWNER_ID = 2119464081; // Get from @userinfobot
-const UPI_ID = "7722026588@ptaxis"; 
-const WEBAPP_URL = "sidkistotebot-production.up.railway.app"; 
+const DB_PATH = './database.json';
 
-// --- AUTO-SETUP BOT MENU ---
+// --- YOUR CREDENTIALS ---
+const BOT_TOKEN = "8637135798:AAEdTzCnL3fn1keuLzLxQN0BUULXlTMicVY";
+const OWNER_ID = "2119464081";
+const UPI_ID = "7722026588@ptaxis";
+const WEBAPP_URL = "https://sidkistotebot-production.up.railway.app"; 
+
+// --- DATABASE PERSISTENCE ---
+function loadDB() {
+    if (!fs.existsSync(DB_PATH)) {
+        const initialData = { 
+            users: {}, 
+            market: [
+                { id: 1, title: "Premium VIP Account", price: 10, image: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400" },
+                { id: 2, title: "Rare Username @Sid", price: 50, image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400" }
+            ], 
+            deposits: [] 
+        };
+        fs.writeFileSync(DB_PATH, JSON.stringify(initialData, null, 2));
+        return initialData;
+    }
+    return JSON.parse(fs.readFileSync(DB_PATH));
+}
+function saveDB(data) { fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2)); }
+let db = loadDB();
+
+// --- TELEGRAM AUTO-SETUP ---
 async function setupBot() {
     try {
         await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/setChatMenuButton`, {
-            menu_button: {
-                type: "web_app",
-                text: "🛒 Sid Store",
-                web_app: { url: WEBAPP_URL }
-            }
+            menu_button: { type: "web_app", text: "🛒 Sid Store", web_app: { url: WEBAPP_URL } }
         });
-        console.log("✅ Sid Store: Telegram Menu Button Linked!");
-    } catch (e) { console.log("❌ Bot Setup Error: Check Token/URL"); }
+        console.log("✅ Bot Menu Linked!");
+    } catch (e) { console.log("❌ Bot Setup Error"); }
 }
-
-// --- DATABASE (TEMPORARY) ---
-let db = {
-    users: {}, 
-    market: [
-        { id: 1, title: "Verified Premium ID", price: 20, image: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400", sellerId: "admin" },
-        { id: 2, title: "OG Username @Sid", price: 100, image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400", sellerId: "admin" }
-    ],
-    pendingDeposits: []
-};
 
 // --- API ROUTES ---
 app.post('/api/init', (req, res) => {
     const { id, username } = req.body;
-    if (!db.users[id]) db.users[id] = { balance: 0.00, username: username || "Guest" };
-    res.json({ user: db.users[id], market: db.market, isOwner: parseInt(id) === OWNER_ID, upi: UPI_ID });
-});
-
-app.post('/api/deposit', (req, res) => {
-    const { userId, amount, utr, username } = req.body;
-    db.pendingDeposits.push({ id: Date.now(), userId, username, amount: parseFloat(amount), utr, status: 'pending' });
-    res.json({ success: true });
+    if (!id) return res.status(400).send("ID missing");
+    if (!db.users[id]) {
+        db.users[id] = { balance: 0.00, username: username || "Guest" };
+        saveDB(db);
+    }
+    res.json({ user: db.users[id], market: db.market, upi: UPI_ID });
 });
 
 app.post('/api/buy', (req, res) => {
     const { buyerId, itemId } = req.body;
+    const user = db.users[buyerId];
     const item = db.market.find(i => i.id === itemId);
-    if (item && db.users[buyerId].balance >= item.price) {
-        db.users[buyerId].balance -= item.price;
-        db.market = db.market.filter(i => i.id !== itemId);
-        res.json({ success: true, balance: db.users[buyerId].balance });
-    } else { res.status(400).json({ error: "Insufficient Balance" }); }
+
+    if (user && item && user.balance >= item.price) {
+        user.balance -= item.price;
+        saveDB(db);
+        
+        // Notify Owner of Sale
+        axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            chat_id: OWNER_ID,
+            text: `🛍️ *New Sale!*\nUser: ${user.username}\nItem: ${item.title}\nPrice: $${item.price}`,
+            parse_mode: "Markdown"
+        });
+        return res.json({ success: true });
+    }
+    res.status(400).json({ success: false });
 });
 
-app.post('/api/sell', (req, res) => {
-    const { sellerId, title, price, image } = req.body;
-    db.market.push({ id: Date.now(), title, price: parseFloat(price), image, sellerId });
+app.post('/api/deposit', (req, res) => {
+    const { userId, amount, utr, username } = req.body;
+    if (db.deposits.find(d => d.utr === utr)) return res.status(400).json({ error: "Used UTR" });
+    
+    db.deposits.push({ userId, username, amount, utr, status: 'pending' });
+    saveDB(db);
+
+    axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        chat_id: OWNER_ID,
+        text: `💰 *New Deposit*\nUser: ${username}\nAmt: ${amount}\nUTR: ${utr}`,
+        parse_mode: "Markdown"
+    });
     res.json({ success: true });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Sid Store Live on Port ${PORT}`);
-    if (BOT_TOKEN !== "YOUR_BOT_TOKEN_HERE") setupBot();
+app.listen(process.env.PORT || 3000, () => {
+    console.log("🚀 Sid Store Active");
+    setupBot();
 });
