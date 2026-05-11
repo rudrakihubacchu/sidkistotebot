@@ -4,111 +4,298 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --amz-orange: #ff9900; --amz-blue: #232f3e; --bg: #f3f3f3; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; }
-        .header { background: var(--amz-blue); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 18px; margin: 0; color: var(--amz-orange); font-weight: 800; }
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
-        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 130px; object-fit: cover; }
-        .p-info { padding: 10px; }
-        .p-title { font-size: 13px; color: #111; height: 32px; overflow: hidden; }
-        .p-price { font-size: 18px; font-weight: bold; color: #B12704; margin: 5px 0; }
-        .btn { background: var(--amz-orange); border: none; padding: 12px; border-radius: 7px; font-weight: bold; width: 100%; cursor: pointer; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 12px 0; }
-        .nav-btn { border: none; background: none; color: #555; text-align: center; font-size: 11px; }
-        .active { color: var(--amz-orange); }
-        .modal { position: fixed; top: 0; background: rgba(0,0,0,0.85); width: 100%; height: 100%; display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; padding: 20px; width: 85%; border-radius: 15px; }
-        input { width: 92%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; }
+        :root {
+            --primary: #0088cc; /* Telegram Blue */
+            --accent: #00d4ff;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --amz-orange: #ff9900;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* Animated Header */
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+            background: linear-gradient(to right, var(--amz-orange), #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .balance-chip {
+            background: rgba(0, 136, 204, 0.1);
+            border: 1px solid var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s;
+        }
+
+        /* Dynamic Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .card:active { transform: scale(0.96); }
+
+        .card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-bottom: 1px solid #334155;
+        }
+
+        .p-info { padding: 12px; }
+
+        .p-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            height: 40px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .p-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .btn-buy {
+            background: linear-gradient(90deg, var(--amz-orange), #ffb700);
+            border: none;
+            color: #000;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Bottom Navigation Bar */
+        .nav {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            border: none;
+            background: none;
+            color: #94a3b8;
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: 0.3s;
+        }
+
+        .nav-btn.active { color: var(--accent); }
+        .nav-btn i { font-size: 20px; }
+
+        /* Wallet Form */
+        .wallet-card {
+            background: var(--card-bg);
+            margin: 15px;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 12px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); }
+
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>WELCOME SID STORE</h1>
-        <div id="top-bal" style="font-weight:bold">$0.00</div>
+        <h1>SID STORE</h1>
+        <div class="balance-chip">
+            <i class="fas fa-wallet"></i>
+            <span id="top-bal">$0.00</span>
+        </div>
     </div>
 
-    <!-- MAIN GRID -->
-    <div id="page-home" class="product-grid"></div>
+    <div id="page-home">
+        <div id="product-list" class="product-grid"></div>
+    </div>
 
-    <!-- WALLET PAGE -->
-    <div id="page-wallet" class="hidden" style="padding: 20px;">
-        <div class="card" style="padding: 20px; text-align: center;">
-            <h3>Wallet Refill</h3>
-            <p>UPI ID: <b id="upi-display" style="color:var(--amz-blue)">...</b></p>
-            <input type="number" id="w-amt" placeholder="Amount ($/₹)">
+    <div id="page-wallet" class="hidden">
+        <div class="wallet-card">
+            <i class="fas fa-university" style="font-size: 40px; color: var(--accent); margin-bottom: 15px;"></i>
+            <h2 style="margin:0">Refill Balance</h2>
+            <p style="color: #94a3b8; font-size: 14px;">Pay via UPI & enter UTR</p>
+            <div style="background:#0f172a; padding:10px; border-radius:10px; margin:15px 0;">
+                <span id="upi-display" style="font-family: monospace; color: var(--amz-orange); font-size: 18px;"></span>
+            </div>
+            <input type="number" id="w-amt" placeholder="Amount (e.g. 500)">
             <input type="text" id="w-utr" placeholder="12-Digit UTR Number">
-            <button class="btn" onclick="sendDep()">Submit Payment</button>
+            <button class="btn-buy" style="margin-top:10px;" onclick="sendDep()">Confirm Deposit</button>
         </div>
     </div>
-
-    <!-- SELL MODAL -->
-    <div id="sellModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-top:0">Upload Product</h3>
-            <input type="text" id="s-title" placeholder="Product Title">
-            <input type="number" id="s-price" placeholder="Price ($)">
-            <input type="text" id="s-img" placeholder="Image URL">
-            <button class="btn" onclick="list()">Post to Store</button>
-            <button onclick="showSell(false)" style="background:none; border:none; width:100%; margin-top:10px;">Close</button>
-        </div>
-    </div>
-
-    <button onclick="showSell(true)" style="position:fixed; bottom:85px; right:20px; background:var(--amz-orange); color:white; border:none; width:55px; height:55px; border-radius:50%; font-size:24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">+</button>
 
     <div class="nav">
-        <button class="nav-btn active" id="n-h" onclick="tab('home')"><i class="fas fa-home fa-lg"></i><br>Home</button>
-        <button class="nav-btn" id="n-w" onclick="tab('wallet')"><i class="fas fa-wallet fa-lg"></i><br>Wallet</button>
-        <button class="nav-btn" onclick="tg.close()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Exit</button>
+        <button class="nav-btn active" id="n-h" onclick="tab('home')">
+            <i class="fas fa-house"></i><span>Home</span>
+        </button>
+        <button class="nav-btn" id="n-w" onclick="tab('wallet')">
+            <i class="fas fa-credit-card"></i><span>Wallet</span>
+        </button>
+        <button class="nav-btn" onclick="tg.close()">
+            <i class="fas fa-circle-xmark"></i><span>Exit</span>
+        </button>
     </div>
 
 <script>
     let tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.headerColor = "#0f172a";
+    
     let uid = tg.initDataUnsafe?.user?.id || 12345;
     
     async function refresh() {
-        let r = await fetch('/api/init', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: uid, username: tg.initDataUnsafe?.user?.first_name}) });
-        let d = await r.json();
-        document.getElementById('top-bal').innerText = `$${d.user.balance.toFixed(2)}`;
-        document.getElementById('upi-display').innerText = d.upi;
-        const g = document.getElementById('page-home'); g.innerHTML = "";
-        d.market.forEach(i => {
-            g.innerHTML += `<div class="card"><img src="${i.image}"><div class="p-info"><div class="p-title">${i.title}</div><div class="p-price">$${i.price}</div><button class="btn" onclick="buy(${i.id})">Buy</button></div></div>`;
-        });
-    }
-
-    async function sendDep() {
-        const amount = document.getElementById('w-amt').value;
-        const utr = document.getElementById('w-utr').value;
-        await fetch('/api/deposit', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({userId: uid, amount, utr, username: tg.initDataUnsafe?.user?.first_name}) });
-        alert("Payment Submitted! Owner will verify.");
+        try {
+            let r = await fetch('/api/init', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({id: uid, username: tg.initDataUnsafe?.user?.first_name}) 
+            });
+            let d = await r.json();
+            
+            // Dynamic UI updates
+            document.getElementById('top-bal').innerText = `$${d.user.balance.toFixed(2)}`;
+            document.getElementById('upi-display').innerText = d.upi;
+            
+            const list = document.getElementById('product-list'); 
+            list.innerHTML = "";
+            d.market.forEach(i => {
+                list.innerHTML += `
+                    <div class="card">
+                        <img src="${i.image}">
+                        <div class="p-info">
+                            <div class="p-title">${i.title}</div>
+                            <div class="p-price">$${i.price}</div>
+                            <button class="btn-buy" onclick="buy(${i.id})">
+                                <i class="fas fa-shopping-cart"></i> Buy Now
+                            </button>
+                        </div>
+                    </div>`;
+            });
+        } catch (e) { console.error("Update failed"); }
     }
 
     async function buy(id) {
-        let r = await fetch('/api/buy', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({buyerId: uid, itemId: id}) });
-        if(r.ok) { alert("Item Purchased!"); refresh(); } else { alert("Insufficient Funds"); }
+        tg.HapticFeedback.impactOccurred('medium');
+        let r = await fetch('/api/buy', { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({buyerId: uid, itemId: id}) 
+        });
+        if(r.ok) {
+            tg.showPopup({title: 'Success!', message: 'Item added to your account.'});
+            refresh();
+        } else {
+            tg.showPopup({title: 'Error', message: 'Insufficient balance. Please refill your wallet.'});
+        }
     }
 
     function tab(t) {
+        tg.HapticFeedback.selectionChanged();
         document.getElementById('page-home').classList.toggle('hidden', t !== 'home');
         document.getElementById('page-wallet').classList.toggle('hidden', t !== 'wallet');
         document.getElementById('n-h').classList.toggle('active', t === 'home');
         document.getElementById('n-w').classList.toggle('active', t === 'wallet');
     }
 
-    function showSell(s) { document.getElementById('sellModal').style.display = s ? 'flex' : 'none'; }
-    
-    async function list() {
-        await fetch('/api/sell', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({sellerId: uid, title: document.getElementById('s-title').value, price: document.getElementById('s-price').value, image: document.getElementById('s-img').value}) });
-        showSell(false); refresh();
+    async function sendDep() {
+        const amount = document.getElementById('w-amt').value;
+        const utr = document.getElementById('w-utr').value;
+        if(!amount || !utr) return alert("Fill all fields");
+        
+        await fetch('/api/deposit', { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({userId: uid, amount, utr, username: tg.initDataUnsafe?.user?.first_name}) 
+        });
+        tg.showPopup({message: 'Payment sent for verification!'});
     }
 
-    tg.expand();
     refresh();
 </script>
 </body>
