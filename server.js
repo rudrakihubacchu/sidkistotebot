@@ -12,7 +12,7 @@ app.use(express.static('public'));
 const BOT_TOKEN = "8637135798:AAEdTzCnL3fn1keuLzLxQN0BUULXlTMicVY"; 
 const OWNER_ID = 2119464081; // Get from @userinfobot
 const UPI_ID = "7722026588@ptaxis"; 
-const WEBAPP_URL = "https://your-railway-url.app"; 
+const WEBAPP_URL = "sidkistotebot-production.up.railway.app"; 
 
 // --- AUTO-SETUP BOT MENU ---
 async function setupBot() {
