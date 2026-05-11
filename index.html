@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --amz-orange: #ff9900; --amz-blue: #232f3e; --bg: #f3f3f3; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; }
+        .header { background: var(--amz-blue); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 18px; margin: 0; color: var(--amz-orange); font-weight: 800; }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 130px; object-fit: cover; }
+        .p-info { padding: 10px; }
+        .p-title { font-size: 13px; color: #111; height: 32px; overflow: hidden; }
+        .p-price { font-size: 18px; font-weight: bold; color: #B12704; margin: 5px 0; }
+        .btn { background: var(--amz-orange); border: none; padding: 12px; border-radius: 7px; font-weight: bold; width: 100%; cursor: pointer; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 12px 0; }
+        .nav-btn { border: none; background: none; color: #555; text-align: center; font-size: 11px; }
+        .active { color: var(--amz-orange); }
+        .modal { position: fixed; top: 0; background: rgba(0,0,0,0.85); width: 100%; height: 100%; display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; padding: 20px; width: 85%; border-radius: 15px; }
+        input { width: 92%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>WELCOME SID STORE</h1>
+        <div id="top-bal" style="font-weight:bold">$0.00</div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div id="page-home" class="product-grid"></div>
+
+    <!-- WALLET PAGE -->
+    <div id="page-wallet" class="hidden" style="padding: 20px;">
+        <div class="card" style="padding: 20px; text-align: center;">
+            <h3>Wallet Refill</h3>
+            <p>UPI ID: <b id="upi-display" style="color:var(--amz-blue)">...</b></p>
+            <input type="number" id="w-amt" placeholder="Amount ($/₹)">
+            <input type="text" id="w-utr" placeholder="12-Digit UTR Number">
+            <button class="btn" onclick="sendDep()">Submit Payment</button>
+        </div>
+    </div>
+
+    <!-- SELL MODAL -->
+    <div id="sellModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0">Upload Product</h3>
+            <input type="text" id="s-title" placeholder="Product Title">
+            <input type="number" id="s-price" placeholder="Price ($)">
+            <input type="text" id="s-img" placeholder="Image URL">
+            <button class="btn" onclick="list()">Post to Store</button>
+            <button onclick="showSell(false)" style="background:none; border:none; width:100%; margin-top:10px;">Close</button>
+        </div>
+    </div>
+
+    <button onclick="showSell(true)" style="position:fixed; bottom:85px; right:20px; background:var(--amz-orange); color:white; border:none; width:55px; height:55px; border-radius:50%; font-size:24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">+</button>
+
+    <div class="nav">
+        <button class="nav-btn active" id="n-h" onclick="tab('home')"><i class="fas fa-home fa-lg"></i><br>Home</button>
+        <button class="nav-btn" id="n-w" onclick="tab('wallet')"><i class="fas fa-wallet fa-lg"></i><br>Wallet</button>
+        <button class="nav-btn" onclick="tg.close()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Exit</button>
+    </div>
+
+<script>
+    let tg = window.Telegram.WebApp;
+    let uid = tg.initDataUnsafe?.user?.id || 12345;
+    
+    async function refresh() {
+        let r = await fetch('/api/init', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: uid, username: tg.initDataUnsafe?.user?.first_name}) });
+        let d = await r.json();
+        document.getElementById('top-bal').innerText = `$${d.user.balance.toFixed(2)}`;
+        document.getElementById('upi-display').innerText = d.upi;
+        const g = document.getElementById('page-home'); g.innerHTML = "";
+        d.market.forEach(i => {
+            g.innerHTML += `<div class="card"><img src="${i.image}"><div class="p-info"><div class="p-title">${i.title}</div><div class="p-price">$${i.price}</div><button class="btn" onclick="buy(${i.id})">Buy</button></div></div>`;
+        });
+    }
+
+    async function sendDep() {
+        const amount = document.getElementById('w-amt').value;
+        const utr = document.getElementById('w-utr').value;
+        await fetch('/api/deposit', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({userId: uid, amount, utr, username: tg.initDataUnsafe?.user?.first_name}) });
+        alert("Payment Submitted! Owner will verify.");
+    }
+
+    async function buy(id) {
+        let r = await fetch('/api/buy', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({buyerId: uid, itemId: id}) });
+        if(r.ok) { alert("Item Purchased!"); refresh(); } else { alert("Insufficient Funds"); }
+    }
+
+    function tab(t) {
+        document.getElementById('page-home').classList.toggle('hidden', t !== 'home');
+        document.getElementById('page-wallet').classList.toggle('hidden', t !== 'wallet');
+        document.getElementById('n-h').classList.toggle('active', t === 'home');
+        document.getElementById('n-w').classList.toggle('active', t === 'wallet');
+    }
+
+    function showSell(s) { document.getElementById('sellModal').style.display = s ? 'flex' : 'none'; }
+    
+    async function list() {
+        await fetch('/api/sell', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({sellerId: uid, title: document.getElementById('s-title').value, price: document.getElementById('s-price').value, image: document.getElementById('s-img').value}) });
+        showSell(false); refresh();
+    }
+
+    tg.expand();
+    refresh();
+</script>
+</body>
+</html>
